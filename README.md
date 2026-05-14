@@ -53,7 +53,7 @@ Misinformation and fake news have become a global crisis. With millions of artic
 
 ## 🌐 Live Demo
 
-> 🚀 **Try it now:** [fake-news-detector.streamlit.app](https://share.streamlit.io)
+> 🚀 **Try it now:** [fake-news-detector.streamlit.app](https://fake-news-detector-chs.streamlit.app/)
 
 *Replace the link above with your actual Streamlit deployment URL after deploying.*
 
