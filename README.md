@@ -12,269 +12,86 @@
 
 **Paste any news article. Get an instant AI verdict — Real or Fake.**
 
-[Live Demo](https://fake-news-detector-chs.streamlit.app/) · [Overview](#-overview) · [Features](#-features) · [How It Works](#-how-it-works) · [Installation](#-installation--setup) · [Notebook](#-research-notebook)
+🚀 **[Live Demo](https://fake-news-detector-chs.streamlit.app/)** · 📒 **[Research Notebook](https://github.com/AyeshaAndleeb/fake-news-detector-using-machine-learning/blob/main/nlp-based-fake-news-classification.ipynb)**
 
 </div>
 
-## 📌 Table of Contents
-
-- [Overview](#-overview)
-- [The Problem](#-the-problem)
-- [Live Demo](#-live-demo)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [How It Works](#-how-it-works)
-- [Model & Backend Logic](#-model--backend-logic)
-- [Research Notebook](#-research-notebook)
-- [Project Structure](#-project-structure)
-- [Installation & Setup](#-installation--setup)
-- [Deployment](#️-deployment-streamlit-cloud)
-- [Future Improvements](#-future-improvements)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
-
 ## 📖 Overview
 
-**Fake News Detector** is a machine learning–powered web application that analyzes a news article and predicts whether it is **real or fake** — with a confidence percentage. Built with Streamlit for an instant, interactive experience, it uses a trained Logistic Regression model backed by TF-IDF text vectorization to make fast and reliable predictions.
-
-Whether you're a researcher, student, or just someone who wants to verify what they're reading, this tool gives you an AI-backed second opinion in seconds.
-
-## 🚨 The Problem
-
-Misinformation and fake news have become a global crisis. With millions of articles published daily, it is nearly impossible to manually verify the authenticity of every piece of content. This project addresses that challenge by applying Natural Language Processing (NLP) and Machine Learning to automatically detect deceptive or fabricated news content.
-
-## 🌐 Live Demo
-
-> 🚀 **Try it now:** [fake-news-detector-chs.streamlit.app](https://fake-news-detector-chs.streamlit.app/)
+**Fake News Detector** is a machine learning–powered web app that analyzes a news article and predicts whether it is **real or fake** with a confidence score. It uses a Logistic Regression model trained on ~39,000 labeled articles, backed by TF-IDF text vectorization, and deployed via Streamlit.
 
 ## ✨ Features
 
 | Feature | Description |
 | --- | --- |
-| 🤖 **AI Prediction** | Logistic Regression model trained on ~39,000 labeled news articles |
-| 📊 **Confidence Score** | Displays how confident the model is in its prediction (0–100%) |
-| ⚡ **Instant Results** | Results appear above the input — no scrolling required |
-| 🎨 **Clean UI** | Minimal, modern interface built for readability and ease of use |
-| 📝 **Article Stats** | Shows word count and character count of the analyzed article |
-| 🌐 **Cloud Deployed** | Accessible from any device via Streamlit Community Cloud |
-| 📱 **Responsive** | Works on desktop and mobile browsers |
+| 🤖 AI Prediction | Logistic Regression trained on ~39,000 labeled news articles |
+| 📊 Confidence Score | Shows how confident the model is (0–100%) |
+| ⚡ Instant Results | Result appears above the input — no scrolling needed |
+| 📝 Article Stats | Displays word count and character count |
+| 🌐 Cloud Deployed | Live on Streamlit Community Cloud |
 
-## 🛠 Tech Stack
+## 🧠 Model Performance
 
-| Layer | Technology |
-| --- | --- |
-| **Frontend / UI** | [Streamlit](https://streamlit.io) |
-| **ML Model** | Logistic Regression — [Scikit-learn](https://scikit-learn.org) |
-| **Text Vectorization** | TF-IDF Vectorizer (unigrams + bigrams, 100k features) |
-| **Model Serialization** | [Joblib](https://joblib.readthedocs.io) |
-| **Language** | Python 3.8+ |
-| **Deployment** | Streamlit Community Cloud |
-
-## ⚙️ How It Works
-
-```
-User pastes article
-        │
-        ▼
-Text is vectorized
-using TF-IDF Vectorizer
-        │
-        ▼
-Feature vector passed to
-Logistic Regression model
-        │
-        ▼
-Model outputs prediction
-+ probability scores
-        │
-        ▼
-Result displayed instantly:
-✅ REAL  or  ❌ FAKE
-with Confidence %
-```
-
-**Step-by-step:**
-
-1. **Input** — User pastes a news article into the text area.
-2. **Vectorization** — The raw text is transformed into numerical features using a pre-fitted TF-IDF Vectorizer.
-3. **Prediction** — The feature vector is fed into a trained Logistic Regression classifier.
-4. **Output** — The app displays a verdict (Real / Fake) along with the model's confidence percentage and article statistics.
-
-## 🧠 Model & Backend Logic
-
-The prediction pipeline consists of two serialized components:
-
-| File | Purpose |
-| --- | --- |
-| `vectorizer.jb` | Pre-fitted `TfidfVectorizer` — converts raw text into weighted numerical features |
-| `lr_model.jb` | Trained `LogisticRegression` classifier — outputs class label (0 = Fake, 1 = Real) and probability scores |
-
-**Why Logistic Regression?**
-
-Logistic Regression performs exceptionally well on high-dimensional, sparse text data. It is fast, interpretable, and highly effective for binary text classification tasks — making it an ideal choice for this application.
-
-**Model Performance (on held-out test set of 7,821 articles):**
+Trained on the [Fake and Real News Dataset](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset) — 39,105 articles after deduplication (80/20 split).
 
 | Metric | Score |
 | --- | --- |
 | Accuracy | 99.39% |
-| Precision | 99.16% |
-| Recall | 99.72% |
 | F1-Score | 99.44% |
 | ROC-AUC | 99.95% |
 
-**Label Encoding:**
+**Pipeline:** TF-IDF (unigrams + bigrams, 100k features) → Logistic Regression (C=10, solver=saga, tuned via 5-fold GridSearchCV)
 
-| Label | Meaning |
+| File | Purpose |
 | --- | --- |
-| `1` | ✅ Real News |
-| `0` | ❌ Fake News |
+| `vectorizer.jb` | Pre-fitted TF-IDF Vectorizer |
+| `lr_model.jb` | Trained Logistic Regression classifier (0 = Fake, 1 = Real) |
 
 ## 📓 Research Notebook
 
-The full end-to-end machine learning pipeline is documented in the Kaggle notebook:
+Full end-to-end ML pipeline: EDA, preprocessing, word clouds, n-gram analysis, multi-model comparison (LR, NB, LinearSVC, Random Forest), hyperparameter tuning, cross-validation, error analysis, and artifact export.
 
-> 📒 **[View Notebook on GitHub](https://github.com/AyeshaAndleeb/fake-news-detector-using-machine-learning/blob/main/nlp-based-fake-news-classification.ipynb)**
+📒 [View Notebook](https://github.com/AyeshaAndleeb/fake-news-detector-using-machine-learning/blob/main/nlp-based-fake-news-classification.ipynb)
 
-| Step | Description |
-| --- | --- |
-| 📥 Data Loading | Loaded and merged ~44,898 articles (Fake.csv + True.csv) |
-| 🔍 EDA | Class distribution, article length analysis, subject breakdown |
-| 🧹 Preprocessing | Lowercase, URL/HTML removal, lemmatization, stopword removal |
-| ☁️ Word Clouds | Visual comparison of fake vs. real news vocabulary |
-| 📊 N-gram Analysis | Bigram and trigram frequency analysis by label |
-| 🔢 TF-IDF | Unigram + bigram feature extraction (100k features, sublinear TF) |
-| 🤖 Model Training | Logistic Regression, Naive Bayes, LinearSVC, Random Forest |
-| 🎯 Hyperparameter Tuning | 5-fold GridSearchCV — best: C=10, solver=saga |
-| ✅ Cross-Validation | 5-fold stratified CV — Mean F1: 0.9942 |
-| 📉 Error Analysis | Investigated misclassified samples and confidence distribution |
-| 💾 Artifact Export | Saved model and vectorizer as `.jb` files via Joblib |
+## 🛠 Tech Stack
 
-**Dataset:** [Fake and Real News Dataset — Clément Bisaillon (Kaggle)](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset)
+Python 3.8+ · Streamlit · Scikit-learn · Joblib · NLTK
 
-| Split | Fake | Real | Total |
-| --- | --- | --- | --- |
-| After deduplication | ~18,780 | ~20,325 | 39,105 |
-| Train (80%) | — | — | 31,284 |
-| Test (20%) | 3,582 | 4,239 | 7,821 |
-
-## 📸 Screenshots
-
-### Home Page
-![Home Page](images/home.png)
-
-### Real News Result
-![Real News Result](images/result_real.png)
-
-### Fake News Result
-![Fake News Result](images/result_fake.png)
-
-## 📁 Project Structure
-
-```
-fake-news-detector/
-│
-├── app.py                                    # Main Streamlit application
-├── lr_model.jb                               # Trained Logistic Regression model
-├── vectorizer.jb                             # Fitted TF-IDF Vectorizer
-├── requirements.txt                          # Python dependencies
-├── nlp-based-fake-news-classification.ipynb  # Full ML research notebook
-├── .streamlit/
-│   └── config.toml                           # Streamlit theme configuration
-├── images/
-│   ├── home.png
-│   ├── result_real.png
-│   └── result_fake.png
-├── .gitignore
-└── README.md
-```
-
-## 🚀 Installation & Setup
-
-### Prerequisites
-
-- Python 3.8 or higher
-- pip
-
-### 1. Clone the Repository
+## 🚀 Quick Start
 
 ```bash
 git clone https://github.com/AyeshaAndleeb/fake-news-detector-using-machine-learning.git
 cd fake-news-detector-using-machine-learning
-```
-
-### 2. Create a Virtual Environment (Recommended)
-
-```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# macOS / Linux
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```bash
 pip install -r requirements.txt
-```
-
-### 4. Run the App
-
-```bash
 streamlit run app.py
 ```
 
-### 5. Open in Browser
+Open `http://localhost:8501` in your browser.
+
+## ☁️ Deploy to Streamlit Cloud
+
+1. Push repo to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io) → New app
+3. Select repo, set main file to `app.py` → Deploy
+
+## 📁 Project Structure
 
 ```
-http://localhost:8501
+├── app.py                                    # Streamlit app
+├── lr_model.jb                               # Trained model
+├── vectorizer.jb                             # TF-IDF Vectorizer
+├── requirements.txt
+├── nlp-based-fake-news-classification.ipynb  # Research notebook
+└── .streamlit/config.toml                    # Theme config
 ```
-
-## ☁️ Deployment (Streamlit Cloud)
-
-1. Push this repository to GitHub.
-2. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub.
-3. Click **"New app"** and select your repository.
-4. Set the main file path to `app.py`.
-5. Click **"Deploy"** — your app will be live in minutes.
 
 ## 🔮 Future Improvements
 
-- [ ] **Deep Learning Model** — Replace Logistic Regression with BERT or RoBERTa for higher contextual accuracy
-- [ ] **URL Input** — Allow users to paste a news article URL directly
-- [ ] **Multi-language Support** — Extend detection to non-English articles (mBERT, XLM-R)
-- [ ] **Source Credibility Check** — Cross-reference publisher domain reputation
-- [ ] **Explainability** — Highlight which words most influenced the prediction
-- [ ] **Knowledge Graph Checker** — Cross-reference claims against verified fact databases
-- [ ] **User Feedback Loop** — Let users flag incorrect predictions to improve the model
-- [ ] **Batch Analysis** — Upload a CSV of articles and get bulk predictions
-- [ ] **REST API** — FastAPI + Docker deployment for programmatic access
-
-## 🤝 Contributing
-
-Contributions are welcome and appreciated.
-
-```bash
-# 1. Fork the repository
-# 2. Create a feature branch
-git checkout -b feature/your-feature-name
-
-# 3. Commit your changes
-git commit -m "Add: your feature description"
-
-# 4. Push to your branch
-git push origin feature/your-feature-name
-
-# 5. Open a Pull Request
-```
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+- Fine-tune BERT / RoBERTa for deeper contextual understanding
+- Add URL input to fetch articles directly
+- Multilingual support (mBERT, XLM-R)
+- Word-level explainability (highlight influential terms)
+- REST API with FastAPI + Docker
 
 ## 📬 Contact
 
@@ -282,10 +99,8 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 [![GitHub](https://img.shields.io/badge/GitHub-AyeshaAndleeb-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/AyeshaAndleeb)
 
-*If you found this project useful, consider giving it a ⭐ on GitHub — it means a lot!*
+*If you found this useful, consider giving it a ⭐ — it means a lot!*
 
 </div>
 
-<div align="center">
-Built with ❤️ using Python & Streamlit
-</div>
+<div align="center">Built with ❤️ using Python & Streamlit</div>
