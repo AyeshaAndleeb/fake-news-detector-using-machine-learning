@@ -7,12 +7,12 @@
 [![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
-[![Deployed on Streamlit](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://share.streamlit.io)
+[![Kaggle](https://img.shields.io/badge/Notebook-Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white)](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
 
 **Paste any news article. Get an instant AI verdict — Real or Fake.**
 
-[Live Demo](#-live-demo) · [Features](#-features) · [How It Works](#-how-it-works) · [Installation](#-installation) · [Screenshots](#-screenshots)
+[Overview](#-overview) · [Features](#-features) · [How It Works](#-how-it-works) · [Model Details](#-model--backend-logic) · [Installation](#-installation--setup) · [Notebook](#-research-notebook)
 
 </div>
 
@@ -22,14 +22,14 @@
 
 - [Overview](#-overview)
 - [The Problem](#-the-problem)
-- [Live Demo](#-live-demo)
-- [Screenshots](#-screenshots)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [How It Works](#-how-it-works)
 - [Model & Backend Logic](#-model--backend-logic)
+- [Research Notebook](#-research-notebook)
 - [Project Structure](#-project-structure)
 - [Installation & Setup](#-installation--setup)
+- [Deployment](#️-deployment-streamlit-cloud)
 - [Future Improvements](#-future-improvements)
 - [Contributing](#-contributing)
 - [License](#-license)
@@ -51,39 +51,16 @@ Misinformation and fake news have become a global crisis. With millions of artic
 
 ---
 
-## 🌐 Live Demo
-
-> 🚀 **Try it now:** [fake-news-detector.streamlit.app](https://fake-news-detector-chs.streamlit.app/)
-
-*Replace the link above with your actual Streamlit deployment URL after deploying.*
-
----
-
-## 📸 Screenshots
-
-### Home Page
-![Home Page](images/home.png)
-
-### Real News Result
-![Real News Result](images/result_real.png)
-
-### Fake News Result
-![Fake News Result](images/result_fake.png)
-
-> 📁 Add your screenshots inside an `images/` folder and update the paths above.
-
----
-
 ## ✨ Features
 
 | Feature | Description |
 |---|---|
-| 🤖 **AI Prediction** | Logistic Regression model trained on thousands of labeled news articles |
+| 🤖 **AI Prediction** | Logistic Regression model trained on ~39,000 labeled news articles |
 | 📊 **Confidence Score** | Displays how confident the model is in its prediction (0–100%) |
 | ⚡ **Instant Results** | Results appear above the input — no scrolling required |
 | 🎨 **Clean UI** | Minimal, modern interface built for readability and ease of use |
 | 📝 **Article Stats** | Shows word count and character count of the analyzed article |
-| 🌐 **Cloud Deployed** | Accessible from any device via Streamlit Cloud |
+| 🌐 **Cloud Ready** | One-click deployable to Streamlit Community Cloud |
 | 📱 **Responsive** | Works on desktop and mobile browsers |
 
 ---
@@ -94,7 +71,7 @@ Misinformation and fake news have become a global crisis. With millions of artic
 |---|---|
 | **Frontend / UI** | [Streamlit](https://streamlit.io) |
 | **ML Model** | Logistic Regression — [Scikit-learn](https://scikit-learn.org) |
-| **Text Vectorization** | TF-IDF Vectorizer — Scikit-learn |
+| **Text Vectorization** | TF-IDF Vectorizer (unigrams + bigrams, 100k features) — Scikit-learn |
 | **Model Serialization** | [Joblib](https://joblib.readthedocs.io) |
 | **Language** | Python 3.8+ |
 | **Deployment** | Streamlit Community Cloud |
@@ -107,7 +84,7 @@ Misinformation and fake news have become a global crisis. With millions of artic
 User pastes article
         │
         ▼
-Text is cleaned & vectorized
+Text is vectorized
 using TF-IDF Vectorizer
         │
         ▼
@@ -146,6 +123,16 @@ The prediction pipeline consists of two serialized components:
 
 Logistic Regression performs exceptionally well on high-dimensional, sparse text data. It is fast, interpretable, and highly effective for binary text classification tasks — making it an ideal choice for this application.
 
+**Model Performance (on held-out test set of 7,821 articles):**
+
+| Metric | Score |
+|---|---|
+| Accuracy | 99.39% |
+| Precision | 99.16% |
+| Recall | 99.72% |
+| F1-Score | 99.44% |
+| ROC-AUC | 99.95% |
+
 **Label Encoding:**
 
 | Label | Meaning |
@@ -155,21 +142,46 @@ Logistic Regression performs exceptionally well on high-dimensional, sparse text
 
 ---
 
+## 📓 Research Notebook
+
+The full end-to-end machine learning pipeline is documented in [`nlp-based-fake-news-classification.ipynb`](nlp-based-fake-news-classification.ipynb), covering:
+
+| Step | Description |
+|---|---|
+| 📥 Data Loading | Loaded and merged ~44,898 articles (Fake.csv + True.csv) |
+| 🔍 EDA | Class distribution, article length analysis, subject breakdown |
+| 🧹 Preprocessing | Lowercase, URL/HTML removal, lemmatization, stopword removal |
+| ☁️ Word Clouds | Visual comparison of fake vs. real news vocabulary |
+| 📊 N-gram Analysis | Bigram and trigram frequency analysis by label |
+| 🔢 TF-IDF | Unigram + bigram feature extraction (100k features, sublinear TF) |
+| 🤖 Model Training | Logistic Regression, Naive Bayes, LinearSVC, Random Forest |
+| 🎯 Hyperparameter Tuning | 5-fold GridSearchCV (best: C=10, solver=saga) |
+| ✅ Cross-Validation | 5-fold stratified CV — Mean F1: 0.9942 ± low variance |
+| 📉 Error Analysis | Investigated misclassified samples and confidence distribution |
+| 💾 Artifact Export | Saved model and vectorizer as `.jb` files via Joblib |
+
+**Dataset:** [Fake and Real News Dataset — Clément Bisaillon (Kaggle)](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset)
+
+| Split | Fake | Real | Total |
+|---|---|---|---|
+| After deduplication | ~18,780 | ~20,325 | 39,105 |
+| Train (80%) | — | — | 31,284 |
+| Test (20%) | 3,582 | 4,239 | 7,821 |
+
+---
+
 ## 📁 Project Structure
 
 ```
 fake-news-detector/
 │
-├── app.py                  # Main Streamlit application
-├── lr_model.jb             # Trained Logistic Regression model
-├── vectorizer.jb           # Fitted TF-IDF Vectorizer
-├── requirements.txt        # Python dependencies
+├── app.py                                    # Main Streamlit application
+├── lr_model.jb                               # Trained Logistic Regression model
+├── vectorizer.jb                             # Fitted TF-IDF Vectorizer
+├── requirements.txt                          # Python dependencies
+├── nlp-based-fake-news-classification.ipynb  # Full ML research notebook
 ├── .streamlit/
-│   └── config.toml         # Streamlit theme configuration
-├── images/                 # Screenshots for README (add your own)
-│   ├── home.png
-│   ├── result_real.png
-│   └── result_fake.png
+│   └── config.toml                           # Streamlit theme configuration
 ├── .gitignore
 └── README.md
 ```
@@ -186,7 +198,7 @@ fake-news-detector/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/fake-news-detector.git
+git clone https://github.com/abdullahscripts/fake-news-detector.git
 cd fake-news-detector
 ```
 
@@ -234,13 +246,15 @@ http://localhost:8501
 
 ## 🔮 Future Improvements
 
-- [ ] **Deep Learning Model** — Replace Logistic Regression with BERT or LSTM for higher accuracy
+- [ ] **Deep Learning Model** — Replace Logistic Regression with BERT or RoBERTa for higher contextual accuracy
 - [ ] **URL Input** — Allow users to paste a news article URL directly
-- [ ] **Multi-language Support** — Extend detection to non-English articles
+- [ ] **Multi-language Support** — Extend detection to non-English articles (mBERT, XLM-R)
 - [ ] **Source Credibility Check** — Cross-reference publisher domain reputation
 - [ ] **Explainability** — Highlight which words most influenced the prediction
+- [ ] **Knowledge Graph Checker** — Cross-reference claims against verified fact databases
 - [ ] **User Feedback Loop** — Let users flag incorrect predictions to improve the model
 - [ ] **Batch Analysis** — Upload a CSV of articles and get bulk predictions
+- [ ] **REST API** — FastAPI + Docker deployment for programmatic access
 
 ---
 
@@ -262,8 +276,6 @@ git push origin feature/your-feature-name
 # 5. Open a Pull Request
 ```
 
-Please make sure your code is clean and well-commented before submitting a PR.
-
 ---
 
 ## 📄 License
@@ -278,7 +290,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 **Abdullah**
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/YOUR_USERNAME)
+[![GitHub](https://img.shields.io/badge/GitHub-abdullahscripts-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abdullahscripts)
 [![Email](https://img.shields.io/badge/Email-abdullahscripts%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:abdullahscripts@gmail.com)
 
 *If you found this project useful, consider giving it a ⭐ on GitHub — it means a lot!*
